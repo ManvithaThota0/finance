@@ -123,8 +123,7 @@ public class login {
 		   
 		   
 		   
-		   
-		
+		   System.out.println("Dropdown successfully clicked");	
 		   
 		
 	}
