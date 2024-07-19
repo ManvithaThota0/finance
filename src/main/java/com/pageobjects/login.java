@@ -40,6 +40,7 @@ public class login {
 	
 	driver.manage().window().maximize();
 	driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+	
 	driver.get("https://www.citi.com/");
 	String Title=driver.getTitle();
 	System.out.println("Title of Citibank = " +Title);
@@ -63,7 +64,11 @@ public class login {
 		String ExpectedMsg="Your information doesn't match our records. Try again, or reset your password.";
 		String Actualmsg=driver.findElement(By.xpath("//div[contains(@class,'cds-form-field-infix')]//span[1]")).getText();
 		Assert.assertTrue(Actualmsg.contains(ExpectedMsg),"Your information doesn't match our records. Try again, or reset your password.");
-		
+		//Explicit wait
+		WebDriverWait wait=new WebDriverWait(driver,Duration.ofSeconds(30));
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(Actualmsg)));
+		//fluent wait
+		//Wait<WebDriver> fluentwait=new FluentWait<>(driver).withTimeout(Duration.ofSeconds(10)).pollingEvery(Duration.ofSeconds(30)).ignoring(NoSuchElementException.class);
 	}
 	
 	@Test(priority=2, enabled=false)
@@ -83,29 +88,36 @@ public class login {
 	@Test(priority=3, enabled=true)
 	public void Dropdown() throws InterruptedException {
 		
-		WebElement Creditcard=driver.findElement(By.xpath("//li[contains(@class,'ng-star-inserted')]//a[1]"));
+		WebElement Creditcard=driver.findElement(By.xpath("//li[@role='listitem']//a[text()='Credit Cards']"));
 		Thread.sleep(3000);
+     	WebElement ViewAllCreditCards=driver.findElement(By.xpath("//*[text()='View All Credit Cards']"));
+     	Actions action=new Actions(driver);
+		action.moveToElement(Creditcard).moveToElement(ViewAllCreditCards).click().build().perform();
 		
-	    Actions MainMenu=new Actions(driver);
-        MainMenu.moveToElement(Creditcard).click().perform();
-        
-        driver.findElement(By.linkText("View All Credit Cards")).click();
-        String Title2=driver.getTitle();
-        System.out.println("Title is ="+Title2);
-        
-        String Actual=driver.findElement(By.xpath("//div//h1[contains(@id,'mppHeaderContent?.pageHeader')]")).getText();
+		WebDriverWait wait=new WebDriverWait(driver, Duration.ofSeconds(10));
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[@id='mppHeaderContent?.pageHeader']")));
+		
+		String Actual=driver.findElement(By.xpath("//h1[@id='mppHeaderContent?.pageHeader']")).getText();
         String Expected="View and Compare All Credit Cards";
-        
         Assert.assertEquals(Actual, Expected);
-        		
+    
 	}
+
+// List<WebElement> CardOptions= driver.findElements(By.xpath("//li[@role='listitem']//a[text()='Credit Cards']"));
+//	for(WebElement Options: CardOptions) {
+//		if(Options.getText().equals("View and Compare All Credit Cards")){
+//			Options.click();
+//			break;
+//		}
+//	}
+//	Thread.sleep(5000);
 	
-	@Test(priority=4, enabled=true)
+	
+	@Test(priority=4, enabled=false)
 	public void CreditCardsDropdown(){
 		
 		 WebElement Ele=driver.findElement(By.xpath("//li[contains(@class,'mainListItems')]//a[1]"));
 		   
-		 
 		   Select Sel=new Select(Ele);
 		   Sel.selectByIndex(0);
 		   
@@ -120,22 +132,8 @@ public class login {
 		   catch(Exception e) {
 			   e.printStackTrace();
 		   }
-		   
-		   
-		   
 		   System.out.println("Dropdown successfully clicked");	
 		   
-		
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	}	
 
 }
